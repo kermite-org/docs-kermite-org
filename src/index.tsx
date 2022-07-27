@@ -29,11 +29,13 @@ const allDocNodeTypes: IDocNodeType[] = [
 type IDocNode_Chapter = {
   nodeType: 'chapter';
   title: string;
+  anchorId: string;
 };
 
 type IDocNode_Section = {
   nodeType: 'section';
   title: string;
+  anchorId: string;
 };
 
 type IDocNode_Text = {
@@ -56,11 +58,13 @@ type IDocNode_Table = {
 type IDocNode_Head1 = {
   nodeType: 'head1';
   caption: string;
+  anchorId: string;
 };
 
 type IDocNode_Head2 = {
   nodeType: 'head2';
   caption: string;
+  anchorId: string;
 };
 
 type IDocNode =
@@ -127,14 +131,18 @@ function cleanupObject(source: any) {
 
 function convertDocSourceNodeToDocNode(source: IDocSourceNode): IDocNode {
   if (source.nodeType === 'chapter') {
+    const title = source.attrs as string;
     return {
       nodeType: 'chapter',
-      title: source.attrs as string,
+      title,
+      anchorId: title,
     };
   } else if (source.nodeType === 'section') {
+    const title = source.attrs as string;
     return {
       nodeType: 'section',
-      title: source.attrs as string,
+      title,
+      anchorId: title,
     };
   } else if (source.nodeType === 'text') {
     return {
@@ -162,14 +170,18 @@ function convertDocSourceNodeToDocNode(source: IDocSourceNode): IDocNode {
       ][],
     };
   } else if (source.nodeType === 'head1') {
+    const caption = source.attrs as string;
     return {
       nodeType: 'head1',
-      caption: source.attrs as string,
+      caption,
+      anchorId: caption,
     };
   } else if (source.nodeType === 'head2') {
+    const caption = source.attrs as string;
     return {
       nodeType: 'head2',
-      caption: source.attrs as string,
+      caption,
+      anchorId: caption,
     };
   }
   throw new Error(`invalid nodeType ${source.nodeType}`);
@@ -210,21 +222,48 @@ function parseManuscriptTextToDocSourceNodes(
   return docSourceNodes;
 }
 
-function parseManuscriptText(sourceText: string): IDocNode[] {
+function fixAnchorIdDuplication(nodes: IDocNode[]) {
+  const anchorIdCounts: Record<string, number> = {};
+
+  for (const node of nodes) {
+    if ('anchorId' in node) {
+      const { anchorId } = node;
+      if (anchorIdCounts[anchorId] === undefined) {
+        anchorIdCounts[anchorId] = 1;
+      } else {
+        const count = anchorIdCounts[anchorId] + 1;
+        node.anchorId = `${node.anchorId}(${count})`;
+        anchorIdCounts[anchorId] = count;
+      }
+    }
+  }
+}
+
+function readManuscriptDocument(sourceText: string): IDocNode[] {
   const docSourceNodes = parseManuscriptTextToDocSourceNodes(sourceText);
-  return docSourceNodes.map(convertDocSourceNodeToDocNode);
+  const nodes = docSourceNodes.map(convertDocSourceNodeToDocNode);
+  fixAnchorIdDuplication(nodes);
+  return nodes;
 }
 
 const NodeView_Chapter: FC<{ node: IDocNode_Chapter }> = ({
-  node: { title },
+  node: { title, anchorId },
 }) => {
-  return <div class="chapter-header">{title}</div>;
+  return (
+    <div class="chapter-header" id={anchorId}>
+      {title}
+    </div>
+  );
 };
 
 const NodeView_Section: FC<{ node: IDocNode_Section }> = ({
-  node: { title },
+  node: { title, anchorId },
 }) => {
-  return <div class="section-header">{title}</div>;
+  return (
+    <div class="section-header" id={anchorId}>
+      {title}
+    </div>
+  );
 };
 
 const NodeView_Text: FC<{ node: IDocNode_Text }> = ({ node: { lines } }) => {
@@ -266,15 +305,23 @@ const NodeView_Table: FC<{ node: IDocNode_Table }> = ({ node: { rows } }) => {
 };
 
 const NodeView_Head1: FC<{ node: IDocNode_Head1 }> = ({
-  node: { caption },
+  node: { caption, anchorId },
 }) => {
-  return <div class="head1">{caption}</div>;
+  return (
+    <div class="head1" id={anchorId}>
+      {caption}
+    </div>
+  );
 };
 
 const NodeView_Head2: FC<{ node: IDocNode_Head2 }> = ({
-  node: { caption },
+  node: { caption, anchorId },
 }) => {
-  return <div class="head2">{caption}</div>;
+  return (
+    <div class="head2" id={anchorId}>
+      {caption}
+    </div>
+  );
 };
 
 const nodeComponentMap: {
@@ -342,7 +389,7 @@ const documentPartCss = css`
 `;
 
 const SiteRoot: FC = () => {
-  const docNodes = useMemo(() => parseManuscriptText(manuscriptText), []);
+  const docNodes = useMemo(() => readManuscriptDocument(manuscriptText), []);
   console.log({ docNodes });
 
   return domStyled(
