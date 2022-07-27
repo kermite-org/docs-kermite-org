@@ -1,4 +1,4 @@
-import { FC, domStyled, jsx, css, render, useMemo } from 'alumina';
+import { css, domStyled, FC, jsx, render } from 'alumina';
 import manuscriptText from './manuscript.fdoc';
 
 type IDocNodeType =
@@ -341,81 +341,141 @@ function renderNode<TNode extends IDocNode>(node: TNode) {
   return <Component node={node} />;
 }
 
-const documentPartCss = css`
-  padding: 20px;
+const store = {
+  docNodes: readManuscriptDocument(manuscriptText),
+};
 
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-
-  > .chapter-header {
-    min-height: 300px;
-    border: solid 1px #888;
-    display: grid;
-    place-items: center;
-    font-size: 4rem;
-  }
-
-  > .section-header {
-    background: orange;
-    font-size: 2rem;
-    color: #fff;
-    margin-top: 20px;
-  }
-
-  > .text-block {
-  }
-
-  > .image-block {
-    max-width: 100%;
-
-    > .image {
-      width: 100%;
-
-      &.--half {
-        width: 60%;
+const SideColumnContent: FC = () => {
+  const listedNodes = store.docNodes.filter(
+    (it) => it.nodeType === 'chapter' || it.nodeType === 'section'
+  ) as (IDocNode_Chapter | IDocNode_Section)[];
+  return domStyled(
+    <div>
+      <ul>
+        {listedNodes.map((node) => (
+          <li class={node.nodeType === 'section' && '--with-indent'}>
+            <a href={`#${node.anchorId}`}>{node.title}</a>
+          </li>
+        ))}
+      </ul>
+    </div>,
+    css`
+      position: sticky;
+      top: 100px;
+      > ul > li.--with-indent {
+        margin-left: 10px;
       }
-    }
-  }
+    `
+  );
+};
 
-  > .table {
-  }
+const BottomBar: FC = () => {
+  return domStyled(
+    <div class="bottom-bar">
+      copyright(c)2021-2022 yahiro, all rights reserved.
+    </div>,
+    css`
+      height: 26px;
+      background: #777;
+      color: #fff;
+      font-size: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    `
+  );
+};
 
-  > .head1 {
-  }
+const MainColumnContent: FC = () => {
+  const { docNodes } = store;
+  return domStyled(
+    <div id="dom-main-column-content">{docNodes.map(renderNode)}</div>,
+    css`
+      height: 100%;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+      scroll-padding-top: 20px;
 
-  > .head2 {
-  }
-`;
+      padding: 20px;
+
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+
+      > .chapter-header {
+        min-height: 300px;
+        border: solid 1px #888;
+        display: grid;
+        place-items: center;
+        font-size: 4rem;
+      }
+
+      > .section-header {
+        background: orange;
+        font-size: 2rem;
+        color: #fff;
+        margin-top: 20px;
+      }
+
+      > .text-block {
+      }
+
+      > .image-block {
+        max-width: 100%;
+
+        > .image {
+          width: 100%;
+
+          &.--half {
+            width: 60%;
+          }
+        }
+      }
+
+      > .table {
+      }
+
+      > .head1 {
+      }
+
+      > .head2 {
+      }
+    `
+  );
+};
 
 const SiteRoot: FC = () => {
-  const docNodes = useMemo(() => readManuscriptDocument(manuscriptText), []);
-  console.log({ docNodes });
-
+  console.log('render');
   return domStyled(
     <div>
       <div class="top-bar">Kermite ユーザーガイド</div>
       <div class="main-row">
-        <div class="side-column"></div>
-        <div class={['main-column', documentPartCss]}>
-          {docNodes.map(renderNode)}
+        <div class="side-column">
+          <SideColumnContent />
+        </div>
+        <div class={'main-column'}>
+          <MainColumnContent />
         </div>
       </div>
-      <div class="bottom-bar"></div>
+      <BottomBar />
     </div>,
 
     css`
       > .top-bar {
-        background: #08f;
+        height: 55px;
+        background: #08f8;
         color: #fff;
         font-size: 2rem;
-        position: sticky;
-        top: 0;
         padding-left: 10px;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
       }
 
       > .main-row {
+        height: calc(100vh - 55px - 26px);
         display: flex;
+
         > .side-column {
           width: 240px;
           border: solid 1px #888;
@@ -426,12 +486,26 @@ const SiteRoot: FC = () => {
           flex-grow: 1;
         }
       }
-
-      > .bottom-bar {
-      }
     `
   );
 };
+
+function navigateToAnchorPositionAfterInitialRender() {
+  const { hash } = location;
+  if (hash) {
+    const domMainColumnContent = document.getElementById(
+      'dom-main-column-content'
+    ) as HTMLElement;
+    domMainColumnContent.style.scrollBehavior = 'auto';
+    location.hash = '';
+    location.hash = hash;
+    setTimeout(() => {
+      domMainColumnContent.style.scrollBehavior = 'smooth';
+    }, 1);
+  }
+}
+
 window.onload = async () => {
   render(() => <SiteRoot />, document.getElementById('app'));
+  navigateToAnchorPositionAfterInitialRender();
 };
