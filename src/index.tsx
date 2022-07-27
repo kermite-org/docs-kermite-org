@@ -3,7 +3,7 @@ import manuscriptText from './manuscript.fdoc';
 
 type IDocNodeType =
   | 'chapter'
-  | 'page'
+  | 'section'
   | 'text'
   | 'image'
   | 'table'
@@ -18,7 +18,7 @@ type IDocSourceNode = {
 
 const allDocNodeTypes: IDocNodeType[] = [
   'chapter',
-  'page',
+  'section',
   'text',
   'image',
   'table',
@@ -31,8 +31,8 @@ type IDocNode_Chapter = {
   title: string;
 };
 
-type IDocNode_Page = {
-  nodeType: 'page';
+type IDocNode_Section = {
+  nodeType: 'section';
   title: string;
 };
 
@@ -65,7 +65,7 @@ type IDocNode_Head2 = {
 
 type IDocNode =
   | IDocNode_Chapter
-  | IDocNode_Page
+  | IDocNode_Section
   | IDocNode_Text
   | IDcoNode_Image
   | IDocNode_Table
@@ -74,7 +74,7 @@ type IDocNode =
 
 type DocNodeTypeMap = {
   chapter: IDocNode_Chapter;
-  page: IDocNode_Page;
+  section: IDocNode_Section;
   text: IDocNode_Text;
   image: IDcoNode_Image;
   table: IDocNode_Table;
@@ -131,9 +131,9 @@ function convertDocSourceNodeToDocNode(source: IDocSourceNode): IDocNode {
       nodeType: 'chapter',
       title: source.attrs as string,
     };
-  } else if (source.nodeType === 'page') {
+  } else if (source.nodeType === 'section') {
     return {
-      nodeType: 'page',
+      nodeType: 'section',
       title: source.attrs as string,
     };
   } else if (source.nodeType === 'text') {
@@ -221,8 +221,10 @@ const NodeView_Chapter: FC<{ node: IDocNode_Chapter }> = ({
   return <div class="chapter-header">{title}</div>;
 };
 
-const NodeView_Page: FC<{ node: IDocNode_Page }> = ({ node: { title } }) => {
-  return <div class="page-header">{title}</div>;
+const NodeView_Section: FC<{ node: IDocNode_Section }> = ({
+  node: { title },
+}) => {
+  return <div class="section-header">{title}</div>;
 };
 
 const NodeView_Text: FC<{ node: IDocNode_Text }> = ({ node: { lines } }) => {
@@ -279,7 +281,7 @@ const nodeComponentMap: {
   [K in IDocNodeType]: FC<{ node: DocNodeTypeMap[K] }>;
 } = {
   chapter: NodeView_Chapter,
-  page: NodeView_Page,
+  section: NodeView_Section,
   text: NodeView_Text,
   image: NodeView_Image,
   table: NodeView_Table,
@@ -307,7 +309,7 @@ const documentPartCss = css`
     font-size: 4rem;
   }
 
-  > .page-header {
+  > .section-header {
     background: orange;
     font-size: 2rem;
     color: #fff;
@@ -339,7 +341,7 @@ const documentPartCss = css`
   }
 `;
 
-const PageRoot: FC = () => {
+const SiteRoot: FC = () => {
   const docNodes = useMemo(() => parseManuscriptText(manuscriptText), []);
   console.log({ docNodes });
 
@@ -384,5 +386,5 @@ const PageRoot: FC = () => {
   );
 };
 window.onload = async () => {
-  render(() => <PageRoot />, document.getElementById('app'));
+  render(() => <SiteRoot />, document.getElementById('app'));
 };
