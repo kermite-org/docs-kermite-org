@@ -328,6 +328,7 @@ async function scrollPageToAnchor(anchorId: string, smooth: boolean) {
 }
 
 async function navigateToAnchor(anchorId: string) {
+  location.hash = '';
   const [newChapterTitle] = anchorId.split('/');
   if (newChapterTitle !== store.currentPageChapterTitle) {
     // console.log(`change page ${newChapterTitle}`);
@@ -344,7 +345,6 @@ function initializePage() {
   const anchorId = hash
     ? decodeURI(hash.slice(1))
     : store.pageSources[0].chapterTitle;
-  location.hash = '';
   navigateToAnchor(anchorId);
 }
 
@@ -353,7 +353,11 @@ namespace nsView {
     node: { title, anchorId },
   }) => {
     return (
-      <div class="chapter-header" id={anchorId}>
+      <div
+        class="chapter-header"
+        id={anchorId}
+        onClick={() => navigateToAnchor(anchorId)}
+      >
         {title}
       </div>
     );
@@ -363,7 +367,11 @@ namespace nsView {
     node: { title, anchorId },
   }) => {
     return (
-      <div class="section-header" id={anchorId}>
+      <div
+        class="section-header"
+        id={anchorId}
+        onClick={() => navigateToAnchor(anchorId)}
+      >
         {title}
       </div>
     );
@@ -411,7 +419,11 @@ namespace nsView {
     node: { caption, anchorId },
   }) => {
     return (
-      <div class="head1" id={anchorId}>
+      <div
+        class="head1"
+        id={anchorId}
+        onClick={() => navigateToAnchor(anchorId)}
+      >
         {caption}
       </div>
     );
@@ -421,7 +433,11 @@ namespace nsView {
     node: { caption, anchorId },
   }) => {
     return (
-      <div class="head2" id={anchorId}>
+      <div
+        class="head2"
+        id={anchorId}
+        onClick={() => navigateToAnchor(anchorId)}
+      >
         {caption}
       </div>
     );
@@ -533,6 +549,7 @@ namespace nsView {
           display: grid;
           place-items: center;
           font-size: 4rem;
+          cursor: pointer;
         }
 
         > .section-header {
@@ -540,6 +557,7 @@ namespace nsView {
           font-size: 2rem;
           color: #fff;
           margin-top: 20px;
+          cursor: pointer;
         }
 
         > .text-block {
@@ -567,12 +585,14 @@ namespace nsView {
           color: #f00;
           font-size: 1.2em;
           font-weight: bold;
+          cursor: pointer;
         }
 
         > .head2 {
           color: #00a;
           font-size: 1.2em;
           font-weight: bold;
+          cursor: pointer;
         }
       `
     );
