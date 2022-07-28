@@ -559,12 +559,21 @@ namespace nsView {
         }
 
         > .table {
+          td {
+            border: solid 1px #888;
+          }
         }
 
         > .head1 {
+          color: #f00;
+          font-size: 1.2em;
+          font-weight: bold;
         }
 
         > .head2 {
+          color: #00a;
+          font-size: 1.2em;
+          font-weight: bold;
         }
       `
     );

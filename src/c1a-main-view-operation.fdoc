@@ -1,6 +1,149 @@
 #chapter メイン画面(操作方法)
 #section キーマッピングの動作を確認したい
+#head2 レイヤの動的プレビュー
+
+#image url=https://i.gyazo.com/b211571c35d3ff9d748b41d468e1c71e.png
+
+#text
+デバイスの接続とプロファイルのセットアップができている状態で、メイン画面を開きます。レイヤの動作を確認したいときには、レイヤ表示モードを'LIVE'にします。
+
+#image url=https://i.gyazo.com/62ef75241bf3b63a93d9ee87841fb7c5.png
+
+#text
+レイヤ表示モードをLIVEにすると、レイヤキーやshiftキーを押したときにキーマッピングの表示が切り替わるようになります。
+
+
+#head2 テスト入力欄
+
+#image url=https://i.gyazo.com/c84c176094e3212f93bbc7713f65398b.png
+
+#text
+文字入力の確認に利用できるテスト入力欄を表示する機能があります。メニューから'テスト入力欄を表示'を選びます。
+
+#image url=https://i.gyazo.com/aedc155d0abceeec4c675578429a54f1.png
+
+#text
+テスト入力欄は他の機能とは関連のない、単純なテキスト入力枠として表示されています。文字がきちんと入力されるかを確認するのに便利です。
+
+
 #section キーアサインの設定
+
+#image url=https://i.gyazo.com/e7f6ad686b30f7ecbe47717e63eaf9a7.png
+
+#text
+キーアサインの基本的な設定方法を解説します。
+キーボードをセットアップし、空のプロファイルを作成した状態から始めます。
+
+#head2 基本的なアサイン
+
+#image url=https://i.gyazo.com/db9b803c75127b67c32cc18e2870a7c6.png
+
+#text
+画面上のキーボード表示で機能を割り当てたいキーを選んで、下のパレットから割り当てる機能を選びます。割り当てを解除するには'none'を選びます。
+
+#head2 モディファイヤキー
+
+#image url=https://i.gyazo.com/37cc23ac97f6fff0e46d32daf2454cae.png
+
+#text
+モディファイヤキーを単体で割り当てる場合、パレットのリスト内から機能を選択して割り当てます。osアサインはWindowsではWinキー, MacではCmdキーに対応します。
+
+#head2 モディファイヤキーとキー入力の組み合わせ
+
+#image url=https://i.gyazo.com/3ec01f01735f047fa8328cb8bbb5fcf6.png
+
+#text
+アサインパレットの右端に縦に並んでいる4つの要素はキー入力に添付されるモディファイヤキーのフラグです。単一のキー入力に対して、ctrl+Zなどのキーの組み合わせを割り当てることができます。
+上のキーボード表示で機能を割り当てたいキーを選び、アサインパレットから割り当てるキー入力を選択したあと、右端のモディファイアフラグを設定します。
+
+キーボード表示上では、shiftがs, ctrlがc, altがa, osがoで表示されます。
+
+
 #section レイヤの作り方
+
+#image url=https://i.gyazo.com/840c60bed9fde3da8e193bdef54e411e.png
+
+#text
+キーボードをセットアップし、メイン画面でプロファイルが読み込まれた状態にします。
+ここでは、mainレイヤ(最初からあるレイヤ)にアルファベットをいくつか追加した状態から解説します。numberレイヤを追加して、そのレイヤを有効にすると数字が入力されるようにしてみます。
+
+#image url=https://i.gyazo.com/b6e8ec531787970fffc2533db915be16.png
+
+#text
+レイヤ追加ボタンを押すとダイアログが出るので、レイヤ名を入力してOKボタンを押します。ここでは、各設定値は初期状態のままにしておきます。
+
+#image url=https://i.gyazo.com/3149215f4bf23871c4735c6297283122.png
+
+#text
+numberレイヤが追加されました。レイヤを選択して、数字の入力を割り当てます。
+
+#image url=https://i.gyazo.com/b6f0edd9da5ecc77d4ef7fa4f977ba6d.png
+
+#text
+mainレイヤに戻り、numberレイヤを呼び出すアサインを配置します。
+
+#image url=https://i.gyazo.com/db43c324d335f01e6d4f09e061dbcad3.png
+
+#text
+キーマッピングをキーボードに書き込んで、動作を確認します。
+numberキーを押していないときはqwerty, 押しているときは123456が入力されるようになりました。
+
+
+
 #section 単押しと長押しで違う機能を割り当てたい
+
+#text
+短くキーを押したときと、キーを長押ししたときで異なる動作をさせることができます。
+
+#image url=https://i.gyazo.com/17b047ef95dc2fee139c6692bd8ba34e.png
+#image url=https://i.gyazo.com/50b107eefe1692fa3d9622aee6c68f77.png
+
+#text
+mainレイヤとnumberレイヤにテスト用のアサインを配置した状態から解説を始めます。
+
+#image url=https://i.gyazo.com/6988389cda0de355bfba116e7c8502b2.png
+
+#text
+画面上部のギアのアイコンを押すと、プロファイル設定のダイアログが表示されます。
+ロジックモデルをsingleからdualに変更します。
+
+#image url=https://i.gyazo.com/b19148daf44ac03710faabb61cc74287.png
+
+#text
+ここでは、各オプションは初期状態のままにしておきます。
+
+#image url=https://i.gyazo.com/432f5a2cd53a1093c11a4f6b540c7467.png
+
+#text
+dualモードでは、アサインパレットの左端にトリガを選択するスロットが追加されます。
+primaryが短押し,secondaryが長押し,tertiaryがダブルタップに対応しています。
+
+
+#image url=https://i.gyazo.com/c22f7498ad794d6131b9fac7771b13dc.png
+
+#text
+ここでは下段中央左のキーに対して、キーを短く押すとスペースの入力、長く押すとnumberレイヤが呼び出されるようにしてみます。
+キーを選択し、primaryスロットを選んで、speceを割り当てます。
+
+#image url=https://i.gyazo.com/c287bc87d7ef62186ac81727f91252f4.png
+
+#text
+同様にsecondaryスロットを選んで、numberレイヤの呼び出しを割り当てます。
+
+#image url=https://i.gyazo.com/344184f6e178ddd95ec1a7bfee6b6e0b.png
+
+#text
+キーマッピングの表示上では、キーの中央にプライマリアサイン、その下にセカンダリアサインが表示されます。
+
+
+#image url=https://i.gyazo.com/d8ea4f91691a901ae662c5c08931b7b6.png
+
+#text
+デバイスにキーマッピングを書き込んで動作を確認します。キーを短く押すとスペースが入力され、長く押すとnumberレイヤに切り替わるようになりました。
+
+#text
+今回長押しにレイヤの呼び出しを割り当てて解説しましたが、shiftやctrlなどのモディファイヤキーについても同様に割り当てることができます。
+
+
+
 
