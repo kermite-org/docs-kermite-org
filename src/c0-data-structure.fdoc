@@ -8,7 +8,7 @@
 Kermiteでは、キーボードの品種に対応したリソースのセットをプロジェクトと呼んでいます。
 プロジェクトには、複数のファームウェアの定義、キーレイアウトの定義、プリセットプロファイルが含まれます。
 
-#image url=https://i.gyazo.com/4e7bb84889123db7db05138e1841c137.png
+#image url=https://i.gyazo.com/7643142c65b0588101a179406f3aed43.png
 
 #image url=https://i.gyazo.com/bafa903d5b76fe89bb1126200c39c16f.png; size=half; remark=プロジェクト選択画面
 #image url=https://i.gyazo.com/0c1364671fc97a1076ab040be9264037.png; size=half; remark=プロジェクトリソースの編集画面
@@ -30,6 +30,16 @@ Kermiteでは、キーマッピングを含むキーボードの設定をプロ�
 プロファイルには、キーマッピングとそのプロファイル固有のキーレイアウトが含まれています。
 
 #image url=http://foo.bar.com/buzz2.png
+
+
+
+#section オンラインリソースの使用
+
+#section パッケージ申請
+
+#section プロジェクトプロファイルとユーザプロファイル
+
+#section プロジェクトIDとキーボード名
 
 
 #----
