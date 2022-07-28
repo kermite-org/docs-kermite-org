@@ -549,8 +549,7 @@ namespace nsView {
           max-width: 100%;
 
           > .image {
-            /* width: 100%; */
-            object-fit: contain;
+            max-width: 100%;
 
             &.--half {
               width: 360px;
