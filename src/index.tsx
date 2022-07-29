@@ -621,7 +621,7 @@ namespace nsView {
         }
 
         > .section-header {
-          background: orange;
+          background: #46a;
           font-size: 2rem;
           color: #fff;
           margin-top: 20px;
