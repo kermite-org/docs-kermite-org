@@ -93,8 +93,37 @@ type DocNodeTypeMap = {
 
 type IPageSource = {
   chapterTitle: string;
+  pageId: string;
   docNodes: IDocNode[];
 };
+
+//http://crc32.nichabi.com/javascript-function.php
+const calculateCrc32ForString = (function () {
+  const table: number[] = [];
+  for (var i = 0; i < 256; i++) {
+    var c = i;
+    for (var j = 0; j < 8; j++) {
+      c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+    }
+    table.push(c);
+  }
+
+  return function (str: string, _crc?: number) {
+    str = unescape(encodeURIComponent(str));
+    let crc = _crc || 0;
+    crc = crc ^ -1;
+    for (var i = 0; i < str.length; i++) {
+      var y = (crc ^ str.charCodeAt(i)) & 0xff;
+      crc = (crc >>> 8) ^ table[y];
+    }
+    crc = crc ^ -1;
+    return crc >>> 0;
+  };
+})();
+
+function getHeaderTextHashed(text: string): string {
+  return calculateCrc32ForString(text).toString(16).padStart(8, '0');
+}
 
 function delayMs(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -150,14 +179,14 @@ namespace nsDocLoader {
       return {
         nodeType: 'chapter',
         title,
-        anchorId: title,
+        anchorId: getHeaderTextHashed(title),
       };
     } else if (source.nodeType === 'section') {
       const title = source.attrs as string;
       return {
         nodeType: 'section',
         title,
-        anchorId: title,
+        anchorId: getHeaderTextHashed(title),
       };
     } else if (source.nodeType === 'text') {
       return {
@@ -189,14 +218,14 @@ namespace nsDocLoader {
       return {
         nodeType: 'head1',
         caption,
-        anchorId: caption,
+        anchorId: getHeaderTextHashed(caption),
       };
     } else if (source.nodeType === 'head2') {
       const caption = source.attrs as string;
       return {
         nodeType: 'head2',
         caption,
-        anchorId: caption,
+        anchorId: getHeaderTextHashed(caption),
       };
     }
     throw new Error(`invalid nodeType ${source.nodeType}`);
@@ -243,21 +272,21 @@ namespace nsDocLoader {
   function patchChapterAnchorIds(nodes: IDocNode[]) {
     const anchorIdCounts: Record<string, number> = {};
 
-    let chapterTitle = '';
+    let pageId = '';
 
     for (const node of nodes) {
       if ('anchorId' in node) {
         if (node.nodeType === 'chapter') {
-          chapterTitle = node.title;
+          pageId = node.anchorId;
         } else {
-          node.anchorId = `${chapterTitle}/${node.anchorId}`;
+          node.anchorId = `${pageId}/${node.anchorId}`;
         }
         const { anchorId } = node;
         if (anchorIdCounts[anchorId] === undefined) {
           anchorIdCounts[anchorId] = 1;
         } else {
           const count = anchorIdCounts[anchorId] + 1;
-          node.anchorId = `${node.anchorId}(${count})`;
+          node.anchorId = `${node.anchorId}${count}`;
           anchorIdCounts[anchorId] = count;
         }
       }
@@ -273,6 +302,7 @@ namespace nsDocLoader {
     ) as IDocNode_Chapter;
     return {
       chapterTitle: chapterNode.title,
+      pageId: getHeaderTextHashed(chapterNode.title),
       docNodes: nodes,
     };
   }
@@ -302,17 +332,15 @@ function createStore() {
     get docNodes() {
       return pageSources[pageIndex]?.docNodes || [];
     },
-    get currentPageChapterTitle() {
-      return pageSources[pageIndex]?.chapterTitle;
+    get currentPageId() {
+      return pageSources[pageIndex]?.pageId;
     },
-    selectPageByChapterTitle(chapterTitle: string) {
-      const index = pageSources.findIndex(
-        (it) => it.chapterTitle === chapterTitle
-      );
+    selectPageById(pageId: string) {
+      const index = pageSources.findIndex((it) => it.pageId === pageId);
       if (index >= 0) {
         pageIndex = index;
       } else {
-        console.error(`cannot find page for ${chapterTitle}`);
+        console.error(`cannot find page for ${pageId}`);
       }
     },
   };
@@ -335,10 +363,10 @@ async function scrollPageToAnchor(anchorId: string, smooth: boolean) {
 
 async function navigateToAnchor(anchorId: string) {
   location.hash = '';
-  const [newChapterTitle] = anchorId.split('/');
-  if (newChapterTitle !== store.currentPageChapterTitle) {
+  const [newPageId] = anchorId.split('/');
+  if (newPageId !== store.currentPageId) {
     // console.log(`change page ${newChapterTitle}`);
-    store.selectPageByChapterTitle(newChapterTitle);
+    store.selectPageById(newPageId);
     await delayMs(1);
     await scrollPageToAnchor(anchorId, false);
   } else {
