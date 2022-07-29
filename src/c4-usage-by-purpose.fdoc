@@ -1,0 +1,85 @@
+#chapter 目的別逆引き 操作方法
+
+#-------
+#section ウィザードを使わずにファームウェアを書き込みたい
+
+#image url=https://i.gyazo.com/4ee0422c075ca93090092c612f6670df.png
+#text
+プロジェクト選択画面で、自分のキーボードに対応するキーボード定義が選択されていることを確認します。
+
+#image url=https://i.gyazo.com/0749a609848f21203202bfd06d036509.png
+#text
+デバイス画面で、ファームウェアのバリエーションを選択して、uf2ファイルをダウンロードします。ボードをリセットしてRP2040のドライブにuf2ファイルを保存します。
+
+#image url=https://i.gyazo.com/238a68b100ee1a338a3f1ae54b1ad7e1.png
+#text
+'add device'ボタンを押して、デバイスを追加します。
+接続がうまくいくと、デバイスがリスト内で選択された状態になります。
+
+#-------
+#section KermiteServerに投稿されているユーザプロファイルを使いたい
+
+#image url=https://i.gyazo.com/bfe41724ad640280821b3e6f9fcb92ae.png
+#text
+プロジェクト選択画面で、自分のキーボードに対応するキーボード定義が選択されていることを確認します。
+
+#image url=https://i.gyazo.com/a0efe6e2101953dabd3687ee9fb12edb.png
+#text
+プリセット画面で、選択したキーボードに対応しているプロファイルの中から使いたいものを選んで、'プロファイルを作成'ボタンを押します。
+
+#image url=https://i.gyazo.com/b3514418603467fd4448bc8a8010cf06.png
+#text
+プロファイルが作成されました。保存/書き込みを行ってキーマッピングをデバイスに適用します。
+
+
+#-------
+#section 投稿されているプロファイルを色々見て参考にしたい
+
+#image url=https://i.gyazo.com/e7db62a37a197e07f2c6c5f2182bfe4a.png
+#text
+プロジェクト選択画面で、'各画面で選択する'にチェックを入れます。
+
+#image url=https://i.gyazo.com/9decfe27e036a583fea2ba6a2fb5a5cd.png
+#text
+プリセット画面を表示します。プリセットを選択するプルダウンリストに加えて、キーボードを選択するプルダウンリストが追加されています。
+詳細を見たいキーボード/プリセットを選んでプロファイルを作成します。
+
+#-------
+#section 公開されているキーボード定義の内容を見たい
+
+#text
+スタート画面または設定画面で、開発者モードを有効にしてから以下の操作を行います。
+
+#image url=https://i.gyazo.com/f9eee62dd279b0d33a20e4621d0a605d.png
+#text
+プロジェクト選択画面の右上にある、ローカルパッケージのタブを選択します。
+メニューから、'copy from online project'を実行します。
+
+#image url=https://i.gyazo.com/801b3ab321958f0c0fceb649dc283d8c.png
+#text
+ドロップダウンリストから対象のプロジェクトを選びOKボタンを押します。
+
+#image url=https://i.gyazo.com/a232fe3c1b9fd2ebeb2279f08f19cb6c.png
+#text
+オンラインパッケージがコピーされ、ローカルパッケージが作成されました。
+クリックして選択状態にします。
+
+#image url=https://i.gyazo.com/00a0be6eb76053302d78b14f7ad7232c.png
+#text
+リソースタブで、選択されているローカルパッケージに含まれているリソースの閲覧/変更ができるようになっています。
+
+#-------
+#section ファイル単体で配布されているパッケージを使いたい
+
+#text
+Kermiteでは、KermiteServerで公開されているパッケージを選んで利用することができますが、それ以外にもファイル単体で配布されているパッケージがある場合、それを取り込んで使うことができます。
+
+#image url=https://i.gyazo.com/c15286d32063697ec2c301de898a48ee.png
+#text
+プロファイル作成ウィザードを起動し、キーボード定義を選択するステップを表示します。
+'Add keyboard definition'の枠に取り込みたいパッケージファイルをドラッグ&ドロップします。
+
+#image url=https://i.gyazo.com/42b8a6f136bbb57035f997c82bfee432.png
+#text
+取り込まれたパッケージはローカルパッケージとしてWebアプリのストレージ内で保持されます。パッケージを選択してウィザードを進めます。
+
