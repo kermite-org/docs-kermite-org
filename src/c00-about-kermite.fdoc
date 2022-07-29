@@ -1,0 +1,52 @@
+#chapter Kermiteの概要
+
+#-------
+#section Kermiteとは?
+#text
+Kermiteは、RP2040を使用した自作キーボードのためのソフトウェアプラットフォームです。
+ブラウザ上で動作するWebアプリに、ファームウェアの作成やキーレイアウトの編集、キーマッピングの設定など、キーボードの運用に必要な機能が実装されています。
+ファームウェアは既存のものに依存しない独自の実装になっており、GUIからキーマッピングを書き込むことを前提として設計されています。
+
+#image url=https://i.gyazo.com/d90ded001fb7980396003edcf11829c2.png; size=half
+
+#rawHtml
+公式サイトは<a href="https://kermite.org" target="_blank">こちら</a>です。
+
+
+#section 主な機能
+
+#head2 ファームウェアの生成
+#text
+画面上で設定を行い、ファームウェアのバイナリを生成する機能があります。事前にビルドされた共通ファームウェアにピンの定義などを注入することでファームウェアを生成します。
+
+#head2 キーレイアウトの編集
+#text
+レイアウトエディタでキーの配置を編集できます。また、キーボードの外形の形状を設定できます。
+
+#head2 キーマッピングの変更
+#text
+キーマッピングを視覚的に変更できます。キーマッピングはMCU内蔵のデータ保存領域に格納されます。
+
+#head2 レイヤ状態のリアルタイム表示
+#text
+使用しているキーボードのレイヤ状態をリアルタイムに表示する機能があります。文字入力時に、画面を見て現在アクティブなレイヤ上のキーマッピングを確認できます。
+
+
+#section 動作環境
+
+#head2 ハードウェア/ファームウェア
+#text
+RP2040を使用しているキーボードに対応しています。ファームウェアは標準HIDデバイスとして動作するので、どのOSでも使用できます。
+
+#head2 ユーティリティソフト
+#text
+WebHIDをサポートしているブラウザで動作します。Google Chromeの最新版で動作確認を行っています。
+※iOS/Androidなどのモバイル向けのOSではWebHIDがサポートされておらず、ユーティリティソフトは使えません。
+
+#section リンク
+
+#rawHtml
+<a href="https://kermite.org" target="_blank">・公式サイト</a><br/>
+<a href="https://app.kermite.org" target="_blank">・アプリページ</a><br/>
+<a href="https://server.kermite.org" target="_blank">・KermiteServer</a><br/>
+<a href="https://discord.gg/PNpEn3Z2kT" target="_blank">・Discord</a><br/>

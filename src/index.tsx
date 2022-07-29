@@ -1,4 +1,14 @@
-import { css, domStyled, FC, jsx, render, rerender } from 'alumina';
+import {
+  css,
+  domStyled,
+  effectOnMount,
+  FC,
+  jsx,
+  render,
+  rerender,
+  useRef,
+} from 'alumina';
+import docC00AboutKermite from './c00-about-kermite.fdoc';
 import docC0DataStructure from './c0-data-structure.fdoc';
 import docC1aMainViewOperation from './c1a-main-view-operation.fdoc';
 import docC1bMainViewDetail from './c1b-main-view-detail.fdoc';
@@ -13,7 +23,8 @@ type IDocNodeType =
   | 'image'
   | 'table'
   | 'head1'
-  | 'head2';
+  | 'head2'
+  | 'rawHtml';
 
 type IDocSourceNode = {
   nodeType: IDocNodeType;
@@ -29,6 +40,7 @@ const allDocNodeTypes: IDocNodeType[] = [
   'table',
   'head1',
   'head2',
+  'rawHtml',
 ];
 
 type IDocNode_Chapter = {
@@ -72,6 +84,11 @@ type IDocNode_Head2 = {
   anchorId: string;
 };
 
+type IDocNode_RawHtml = {
+  nodeType: 'rawHtml';
+  content: string;
+};
+
 type IDocNode =
   | IDocNode_Chapter
   | IDocNode_Section
@@ -79,7 +96,8 @@ type IDocNode =
   | IDcoNode_Image
   | IDocNode_Table
   | IDocNode_Head1
-  | IDocNode_Head2;
+  | IDocNode_Head2
+  | IDocNode_RawHtml;
 
 type DocNodeTypeMap = {
   chapter: IDocNode_Chapter;
@@ -89,6 +107,7 @@ type DocNodeTypeMap = {
   table: IDocNode_Table;
   head1: IDocNode_Head1;
   head2: IDocNode_Head2;
+  rawHtml: IDocNode_RawHtml;
 };
 
 type IPageSource = {
@@ -227,6 +246,11 @@ namespace nsDocLoader {
         caption,
         anchorId: getHeaderTextHashed(caption),
       };
+    } else if (source.nodeType === 'rawHtml') {
+      return {
+        nodeType: 'rawHtml',
+        content: source.contentLines!.join(''),
+      };
     }
     throw new Error(`invalid nodeType ${source.nodeType}`);
   }
@@ -317,6 +341,7 @@ namespace nsDocLoader {
 
 function createStore() {
   const documentSources = [
+    docC00AboutKermite,
     docC0DataStructure,
     docC1aMainViewOperation,
     docC1bMainViewDetail,
@@ -477,6 +502,17 @@ namespace nsView {
     );
   };
 
+  const NodeView_RawHtml: FC<{ node: IDocNode_RawHtml }> = ({
+    node: { content },
+  }) => {
+    const wrapperDivRef = useRef<HTMLElement>();
+    effectOnMount(() => {
+      const wrapperDiv = wrapperDivRef.current!;
+      wrapperDiv.innerHTML = content;
+    });
+    return <div ref={wrapperDivRef} />;
+  };
+
   const nodeComponentMap: {
     [K in IDocNodeType]: FC<{ node: DocNodeTypeMap[K] }>;
   } = {
@@ -487,6 +523,7 @@ namespace nsView {
     table: NodeView_Table,
     head1: NodeView_Head1,
     head2: NodeView_Head2,
+    rawHtml: NodeView_RawHtml,
   };
 
   function renderNode<TNode extends IDocNode>(node: TNode) {
@@ -578,11 +615,8 @@ namespace nsView {
         gap: 20px;
 
         > .chapter-header {
-          min-height: 300px;
           border: solid 1px #888;
-          display: grid;
-          place-items: center;
-          font-size: 4rem;
+          font-size: 3rem;
           cursor: pointer;
         }
 
@@ -628,6 +662,12 @@ namespace nsView {
           font-weight: bold;
           cursor: pointer;
         }
+
+        a {
+          &:hover {
+            text-decoration: underline;
+          }
+        }
       `
     );
   };
@@ -665,7 +705,7 @@ namespace nsView {
           display: flex;
 
           > .side-column {
-            width: 240px;
+            width: 280px;
             border: solid 1px #888;
             flex-shrink: 0;
             overflow-y: scroll;
