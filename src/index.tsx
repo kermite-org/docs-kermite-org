@@ -649,7 +649,7 @@ namespace nsView {
         height: 100%;
         overflow-y: auto;
         scroll-padding-top: 20px;
-        padding: 15px;
+        padding: 20px;
 
         display: flex;
         flex-direction: column;
@@ -749,7 +749,7 @@ namespace nsView {
         }
 
         ${mqOverMedium} {
-          padding: 20px;
+          padding: 20px 30px;
 
           > .chapter-header {
             font-size: 2.2rem;
