@@ -1,0 +1,194 @@
+#chapter ファームウェアの設定
+
+#-------
+#section 標準ファームウェア設定の概要
+
+#image url=https://i.gyazo.com/6a5c32f423c5e5e8c71fc4167865572a.png
+
+#text
+Kermiteの標準ファームウェアでは、各機能が実装されているベースファームウェアに設定値を注入して必要な機能を有効化して動作させます。ベースファームウェアは事前にビルドされており、設定値を注入するための領域が決められています。標準ファームウェアの設定には各機能を有効化させるかどうかのフラグと、機能を有効化したときの機能ごとの設定(ピン配置など)が含まれます。
+
+
+#-------
+#section 基本設定
+
+#image url=https://i.gyazo.com/cb1d486addae55799710c03325a73a48.png
+
+#head2 base firmware type
+#text
+ここではベースファームウェアの種類を選びます。ベースファームごとに利用できる機能が異なります。
+
+#table
+RpUnified|一体型のキーボード用のベースファームウェアです。
+RpSplit|左右対称の分割型のキーボード用のベースファームウェアです。
+RpOddSplit|分割型で左右のキーボードが非対称なキーボード用のベースファームウェアです。
+
+
+#head2 board type
+#text
+マイコンボードの種類を選びます。Kermiteが対応しているボードでは、ボード上のLEDをインジケータとして利用できます。また、ボードを選択すると画面にボードのピンアサインのプレビューが表示されます。
+
+#table
+ProMicroRP2040|Sparkfun ProMicro RP2040
+RpiPico|Raspberry Pi Pico
+ChipRP2040|チップ単体で使用する場合や、ボードがKermiteで対応していない場合
+
+#head2 use board LEDs
+#text
+マイコンボードを指定した際に、ボード上のLEDをインジケータとして利用するかどうかを設定します。
+
+#text
+以下では各機能の設定例を回路構成例と合わせて解説します。
+
+#-------
+#section キーマトリクス
+
+#image url=https://i.gyazo.com/5ab1f812d16f2b9f35cb30cc6e172a49.png
+
+#image url=https://i.gyazo.com/540aa38b683e7a3c26a4974a410abf25.png
+
+#text
+キースイッチとダイオードによるマトリクススキャンの回路です。
+行と列のピンを指定します。
+
+#-------
+#section 直接配線キー
+
+#image url=https://i.gyazo.com/47165eb86aff111986c7141a57b8c095.png
+#image url=https://i.gyazo.com/75b213e416f4c9d255b78c0607812f7e.png
+
+#text
+キースイッチをMCUのポートに直接配線する構成です。
+ポートは内部でプルアップされます。
+
+
+#-------
+#section ロータリーエンコーダ
+
+#image url=https://i.gyazo.com/6cd7f348dc67e6a5d5ad23fdf48a3011.png
+#image url=https://i.gyazo.com/505cad64502387365919f24707701e3a.png
+
+#text
+ロータリーエンコーダです。
+一体型のファームウェアでは3個まで、分割型のファームウェアでは左右1個ずつのロータリーエンコーダに対応しています。
+複数のロータリーエンコーダのピンを続けて記述します。
+
+
+#-------
+#section NeoPixel RGBLED
+
+#image url=https://i.gyazo.com/86a38b36febc28843c5dbaffd0a002c2.png
+#image url=https://i.gyazo.com/2309a90f2f3d7f2206230cf444358d29.png
+
+#text
+WS2812B互換のNeoPixel RGBLEDに対応しています。
+sk6812mini-eでの動作が確認されています。
+LEDを駆動するポートとLEDの個数を指定します。
+
+#-------
+#section I2C OLED
+
+#image url=https://i.gyazo.com/f1416549ef1bb550997002cd5c3029ed.png
+#image url=https://i.gyazo.com/7b538812701b0c13f8edcfdc14779dc7.png
+
+#text
+128x32のI2CグラフィックスOLEDに対応しています。
+使用するピンはGP2, GP3固定となっています。
+
+
+#-------
+#section 左右間通信
+
+#image url=https://i.gyazo.com/58ed170fd9d74c6dc3fd90e64779330e.png
+#image url=https://i.gyazo.com/4baf09792f5f63a5e5324cb2c465a142.png; remark=Pro Micro RP2040による分割キーボードの基礎回路例
+
+#text
+分割キーボード向けに、単線による半二重の双方向通信が実装されています。
+左右のMCUで同じピン同士を配線します。
+通信信号は擬似的なオープンドレインで駆動されており、出力信号同士がショートしてしまう可能性を回避しています。
+
+分割キーボードでは、左右のMCUに同じファームウェアを書き込んでください。
+
+#-------
+#section ボードLEDのインジケータ機能
+
+#text
+ファームウェアの設定でボードLEDを有効にすると、ボード上のLEDが状態の表示に使われます。
+一定時間毎に点滅してプログラムの正常動作を示す機能と、キーが押された場合にLEDを光らせる機能があります。
+これらの動作はデバイスの設定画面でそれぞれ有効/無効を切り替えることができます。
+
+#image url=https://i.gyazo.com/dc905280f27230935fbe9152edd06a8a.png
+
+#text
+Key Hold LED Outputを有効にすると、キーが押されたときにLEDが光ります。
+キーボードを組み立てたあとに、キーが反応するかを確認する際などに便利です。
+
+#text
+Heartbeat LED Outputを有効にすると、プログラムの正常動作時に数秒ごとにLEDが短く光る動作をします。
+
+#head2 分割キーボードでの状態表示
+
+#text
+分割型のキーボードでHeartbeat LED Outputが有効になっている場合、左右間の同期の状態をLEDで表示しています。以下のような表示パターンがあります。
+
+#table
+3秒おきに2回ずつ光る|・起動後master/slave確定待ちのとき ・相手との通信が途絶しているとき
+4回高速点滅|master確定
+500ms間光る|slave確定
+3秒おきに一瞬光る|正常動作中
+
+#text
+分割キーボードでは、起動後USBでのPCとの接続が確立されるまでは、master/slaveが未確定のため処理を待機しています。PCとのUSB接続を確立した側がmasterとなり、slaveにmaster確立メッセージを送ります。ここまでの動作がうまくいくとmaster側のLEDが高速4回点滅、slave側のLEDが500ms点灯し、初期化がうまく行われたことを示します。
+
+#text
+その後左右間の同期がうまく機能していれば、LEDが3秒おきに短く光ります。問題が発生して左右間の通信がうまくいっていない場合には、3秒おきに2回ずつ光る表示をします。
+
+
+#-------
+#section ライティングの設定
+
+#head2 GUIによる設定
+
+#text
+ファームウェアの設定でRGBLEDが有効になっている場合、設定画面にLEDの光らせ方を設定するパラメータが表示されます。
+
+#image url=https://i.gyazo.com/060ef614325646830edce286de3168ff.png
+
+#table
+Glow Enabled|LEDのon/offを指定します。
+Glow Color|LEDの色を設定します。色相が回転します。
+Glow Brightness|LEDの輝度を設定します。
+Glow Pattern|点灯パターンを設定します。5つの点灯パターンが実装されています。
+
+#head2 キーアサインによる設定
+
+#text
+LEDの光り方を変更するキーアサインがあります。キーに割り当てて使用します。
+
+#image url=https://i.gyazo.com/74b0fe86ae017e999d4e75aee9ec4e39.png
+
+#table
+led on^|LEDのon/offを切り替えます。
+led b-|LEDの輝度を下げます。
+led b+|LEDの輝度をあげます。
+led <c|LEDの色のパラメータの値を下げます。
+led c>|LEDの色のパラメータの値を上げます。
+led p>|LEDの点灯パターンをシフトします。
+
+#-------
+#section OLEDの表示内容
+
+#image url=https://i.gyazo.com/1a21cfde46a28888f0cbedac4355d184.png
+
+#text
+押されているキーの状態が表示されます。
+
+#table
+KI|キーインデクス
+KC|キーコード
+M|モディファイヤのビットフラグ
+L|アクティブレイヤのビットフラグ
+
+#text
+右上の6個の記号は、HIDのレポートに含まれるキーコードのスロットを示しています。-は空いているスロット,+は使用中のスロットです。
+

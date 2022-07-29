@@ -3,6 +3,7 @@ import docC0DataStructure from './c0-data-structure.fdoc';
 import docC1aMainViewOperation from './c1a-main-view-operation.fdoc';
 import docC1bMainViewDetail from './c1b-main-view-detail.fdoc';
 import docC2LayoutEditor from './c2-layout-editor.fdoc';
+import docC3FirmwareConfiguration from './c3-firmware-configuration.fdoc';
 
 type IDocNodeType =
   | 'chapter'
@@ -289,6 +290,7 @@ function createStore() {
     docC1aMainViewOperation,
     docC1bMainViewDetail,
     docC2LayoutEditor,
+    docC3FirmwareConfiguration,
   ];
   const pageSources = nsDocLoader.readManuscriptDocuments(documentSources);
   let pageIndex = -1;
