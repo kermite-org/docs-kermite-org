@@ -583,9 +583,7 @@ namespace nsView {
 
   const BottomBar: FC = () => {
     return domStyled(
-      <div class="bottom-bar">
-        copyright(c)2021-2022 yahiro, all rights reserved.
-      </div>,
+      <div class="bottom-bar">copyright©2022 yahiro, all rights reserved.</div>,
       css`
         height: 26px;
         background: #777;
