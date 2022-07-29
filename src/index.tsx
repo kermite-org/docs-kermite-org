@@ -1,4 +1,5 @@
 import {
+  asyncRerender,
   css,
   domStyled,
   effectOnMount,
@@ -7,6 +8,7 @@ import {
   render,
   rerender,
   useRef,
+  useState,
 } from 'alumina';
 import docC00AboutKermite from './c00-about-kermite.fdoc';
 import docC0DataStructure from './c0-data-structure.fdoc';
@@ -169,6 +171,20 @@ function cleanupObject(source: any) {
     }
   });
   return dest;
+}
+
+function debounce<T extends any[]>(
+  targetProc: (...args: T) => void,
+  ms: number
+) {
+  let timerId: NodeJS.Timeout | undefined;
+  return (...args: T) => {
+    if (timerId) {
+      clearTimeout(timerId);
+      timerId = undefined;
+    }
+    timerId = setTimeout(() => targetProc(...args), ms);
+  };
 }
 
 namespace nsDocLoader {
@@ -366,6 +382,9 @@ function createStore() {
         pageIndex = index;
       } else {
         console.error(`cannot find page for ${pageId}`);
+        if (pageIndex === -1) {
+          pageIndex = 0;
+        }
       }
     },
   };
@@ -408,6 +427,15 @@ function initializePage() {
     store.selectPageById(store.pageSources[0].pageId);
   }
 }
+
+const uiLayoutMode = {
+  get isNarrowView() {
+    return window.innerWidth < 640;
+  },
+  get isWideView() {
+    return !uiLayoutMode.isNarrowView;
+  },
+};
 
 namespace nsView {
   const NodeView_Chapter: FC<{ node: IDocNode_Chapter }> = ({
@@ -598,6 +626,21 @@ namespace nsView {
     );
   };
 
+  const mqUnderMedium = `@media screen and (max-width: 640px)`;
+  const mqOverMedium = `@media screen and (min-width: 640px)`;
+
+  const cssDisplayPcOnly = css`
+    ${mqUnderMedium} {
+      display: none;
+    }
+  `;
+
+  const cssDisplaySpOnly = css`
+    ${mqOverMedium} {
+      display: none;
+    }
+  `;
+
   const MainColumnContent: FC = () => {
     const { docNodes } = store;
     return domStyled(
@@ -606,8 +649,7 @@ namespace nsView {
         height: 100%;
         overflow-y: auto;
         scroll-padding-top: 20px;
-
-        padding: 20px;
+        padding: 15px;
 
         display: flex;
         flex-direction: column;
@@ -619,14 +661,14 @@ namespace nsView {
         > .chapter-header {
           background: #f95;
           color: #fff;
-          font-size: 2.5rem;
+          font-size: 1.7rem;
           cursor: pointer;
           padding: 4px 10px;
         }
 
         > .section-header {
           background: #46a;
-          font-size: 1.7rem;
+          font-size: 1.3rem;
           color: #fff;
           margin-top: 30px;
           margin-bottom: 4px;
@@ -636,9 +678,13 @@ namespace nsView {
 
         > .head2 {
           color: #00a;
-          font-size: 1.2rem;
+          font-size: 1.1rem;
           font-weight: bold;
           cursor: pointer;
+        }
+
+        > .chapter-header + .section-header {
+          margin-top: 20px;
         }
 
         > :not(.section-header) + .head2 {
@@ -666,6 +712,9 @@ namespace nsView {
               width: 360px;
             }
           }
+          > .image-remark {
+            font-size: 0.8rem;
+          }
         }
 
         > .table {
@@ -680,7 +729,12 @@ namespace nsView {
             padding: 8px;
           }
           td:first-child {
-            white-space: nowrap;
+            ${mqOverMedium} {
+              white-space: nowrap;
+            }
+            ${mqUnderMedium} {
+              width: 30%;
+            }
           }
         }
 
@@ -693,6 +747,113 @@ namespace nsView {
             text-decoration: underline;
           }
         }
+
+        ${mqOverMedium} {
+          padding: 20px;
+
+          > .chapter-header {
+            font-size: 2.2rem;
+          }
+
+          > .section-header {
+            font-size: 1.7rem;
+          }
+
+          > .head2 {
+            font-size: 1.2rem;
+          }
+        }
+      `
+    );
+  };
+
+  const MobileNavigationMenu: FC = () => {
+    const [isOpen, setIsOpen] = useState(false);
+    const toggleOpen = () => setIsOpen((prev) => !prev);
+
+    const onPageLinkClick = (pageId: string) => {
+      navigateToAnchor(pageId);
+      setIsOpen(false);
+    };
+
+    const fgColor = '#47d';
+    return domStyled(
+      <div>
+        <div class="menu-button" onClick={toggleOpen}>
+          <i class="material-icons">menu</i>
+        </div>
+        <div class="overlay" if={isOpen} onClick={() => setIsOpen(false)} />
+        <div class="menu-panel" if={isOpen}>
+          <ul>
+            {store.pageSources.map((pageSource) => (
+              <li onClick={() => onPageLinkClick(pageSource.pageId)}>
+                {pageSource.chapterTitle}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>,
+      css`
+        position: relative;
+        > .menu-button {
+          color: #fff;
+          border: solid 1px #fff;
+          width: 32px;
+          height: 32px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          cursor: pointer;
+        }
+
+        > .overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+        }
+
+        > .menu-panel {
+          position: absolute;
+          top: 32px;
+          left: 0;
+          border: solid 1px ${fgColor};
+          border-radius: 2px;
+          background: #fff;
+          width: 240px;
+          max-height: 70vh;
+          overflow: auto;
+          background: #cef;
+          padding: 6px;
+
+          > ul {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+
+            > li {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              color: ${fgColor};
+              border: solid 1px ${fgColor};
+              border-radius: 2px;
+              padding: 10px;
+              cursor: pointer;
+              background: #fff;
+              &:hover {
+                opacity: 0.7;
+              }
+              transition: all 0.5s;
+              &:after {
+                font-family: 'Material Icons';
+                content: 'keyboard_arrow_right';
+                font-size: 24px;
+              }
+            }
+          }
+        }
       `
     );
   };
@@ -701,7 +862,10 @@ namespace nsView {
     // console.log('render');
     return domStyled(
       <div>
-        <div class="top-bar">Kermite ユーザーガイド</div>
+        <div class="top-bar">
+          <MobileNavigationMenu class="menu" />
+          <h1>Kermite ユーザーガイド</h1>
+        </div>
         <div class="main-row">
           <div class="side-column">
             <SideColumnContent />
@@ -714,21 +878,31 @@ namespace nsView {
       </div>,
 
       css`
+        height: 100%;
+        overflow-y: hidden;
+
         color: #333;
 
         > .top-bar {
           height: 55px;
-          background: #08f8;
-          color: #fff;
-          font-size: 2rem;
+          background: #6cf;
+          > h1 {
+            color: #fff;
+            font-size: 1.7rem;
+            white-space: nowrap;
+          }
           padding-left: 10px;
-          white-space: nowrap;
           display: flex;
           align-items: center;
+          gap: 8px;
+        }
+
+        > .top-bar > .menu {
+          ${cssDisplaySpOnly}
         }
 
         > .main-row {
-          height: calc(100vh - 55px - 26px);
+          height: calc(100% - 55px - 26px);
           display: flex;
 
           > .side-column {
@@ -736,10 +910,17 @@ namespace nsView {
             border-right: solid 1px #8888;
             flex-shrink: 0;
             overflow-y: scroll;
+            ${cssDisplayPcOnly};
           }
 
           > .main-column {
             flex-grow: 1;
+          }
+        }
+
+        ${mqOverMedium} {
+          > .top-bar > h1 {
+            font-size: 2rem;
           }
         }
       `
@@ -751,4 +932,5 @@ window.onload = async () => {
   console.log('kermite-user-guide 220729');
   initializePage();
   render(() => <nsView.SiteRoot />, document.getElementById('app'));
+  window.addEventListener('resize', debounce(asyncRerender, 200));
 };
