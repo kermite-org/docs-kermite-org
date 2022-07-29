@@ -2,6 +2,7 @@ import { css, domStyled, FC, jsx, render, rerender } from 'alumina';
 import docC0DataStructure from './c0-data-structure.fdoc';
 import docC1aMainViewOperation from './c1a-main-view-operation.fdoc';
 import docC1bMainViewDetail from './c1b-main-view-detail.fdoc';
+import docC2LayoutEditor from './c2-layout-editor.fdoc';
 
 type IDocNodeType =
   | 'chapter'
@@ -287,6 +288,7 @@ function createStore() {
     docC0DataStructure,
     docC1aMainViewOperation,
     docC1bMainViewDetail,
+    docC2LayoutEditor,
   ];
   const pageSources = nsDocLoader.readManuscriptDocuments(documentSources);
   let pageIndex = -1;
