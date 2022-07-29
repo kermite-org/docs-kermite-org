@@ -575,7 +575,7 @@ namespace nsView {
         ))}
       </div>,
       css`
-        padding: 10px;
+        padding: 20px;
         display: flex;
         flex-direction: column;
         gap: 20px;
@@ -605,27 +605,52 @@ namespace nsView {
       css`
         height: 100%;
         overflow-y: auto;
-        /* scroll-behavior: smooth; */
         scroll-padding-top: 20px;
 
         padding: 20px;
 
         display: flex;
         flex-direction: column;
-        gap: 20px;
+
+        > * + * {
+          margin-top: 12px;
+        }
 
         > .chapter-header {
-          border: solid 1px #888;
-          font-size: 3rem;
+          background: #f95;
+          color: #fff;
+          font-size: 2.5rem;
           cursor: pointer;
+          padding: 4px 10px;
         }
 
         > .section-header {
           background: #46a;
-          font-size: 2rem;
+          font-size: 1.7rem;
           color: #fff;
-          margin-top: 20px;
+          margin-top: 30px;
+          margin-bottom: 4px;
           cursor: pointer;
+          padding: 2px 8px;
+        }
+
+        > .head2 {
+          color: #00a;
+          font-size: 1.2rem;
+          font-weight: bold;
+          cursor: pointer;
+        }
+
+        > :not(.section-header) + .head2 {
+          margin-top: 20px;
+        }
+
+        > .head2 + .text-block {
+          margin-top: 6px;
+        }
+
+        > .image-block + .image-block {
+          margin-top: 20px;
         }
 
         > .text-block {
@@ -644,23 +669,23 @@ namespace nsView {
         }
 
         > .table {
+          border-collapse: collapse;
+
+          tr:nth-child(even) {
+            background: #aaa2;
+          }
+
           td {
-            border: solid 1px #888;
+            border: solid 1px #aaa8;
+            padding: 8px;
+          }
+          td:first-child {
+            white-space: nowrap;
           }
         }
 
-        > .head1 {
-          color: #f00;
-          font-size: 1.2em;
-          font-weight: bold;
-          cursor: pointer;
-        }
-
-        > .head2 {
-          color: #00a;
-          font-size: 1.2em;
-          font-weight: bold;
-          cursor: pointer;
+        p {
+          line-height: 1.5rem;
         }
 
         a {
@@ -673,7 +698,7 @@ namespace nsView {
   };
 
   export const SiteRoot: FC = () => {
-    console.log('render');
+    // console.log('render');
     return domStyled(
       <div>
         <div class="top-bar">Kermite ユーザーガイド</div>
@@ -689,6 +714,8 @@ namespace nsView {
       </div>,
 
       css`
+        color: #333;
+
         > .top-bar {
           height: 55px;
           background: #08f8;
@@ -706,7 +733,7 @@ namespace nsView {
 
           > .side-column {
             width: 280px;
-            border: solid 1px #888;
+            border-right: solid 1px #8888;
             flex-shrink: 0;
             overflow-y: scroll;
           }
@@ -721,6 +748,7 @@ namespace nsView {
 }
 
 window.onload = async () => {
+  console.log('kermite-user-guide 220729');
   initializePage();
   render(() => <nsView.SiteRoot />, document.getElementById('app'));
 };
