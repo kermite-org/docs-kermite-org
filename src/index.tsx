@@ -390,7 +390,7 @@ async function navigateToAnchor(anchorId: string) {
   location.hash = '';
   const [newPageId] = anchorId.split('/');
   if (newPageId !== store.currentPageId) {
-    // console.log(`change page ${newChapterTitle}`);
+    // console.log(`change page ${newPageId}`);
     store.selectPageById(newPageId);
     await delayMs(1);
     await scrollPageToAnchor(anchorId, false);
@@ -401,10 +401,12 @@ async function navigateToAnchor(anchorId: string) {
 
 function initializePage() {
   const { hash } = location;
-  const anchorId = hash
-    ? decodeURI(hash.slice(1))
-    : store.pageSources[0].chapterTitle;
-  navigateToAnchor(anchorId);
+  if (hash) {
+    const anchorId = decodeURI(hash.slice(1));
+    navigateToAnchor(anchorId);
+  } else {
+    store.selectPageById(store.pageSources[0].pageId);
+  }
 }
 
 namespace nsView {
