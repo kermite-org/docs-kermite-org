@@ -439,16 +439,38 @@ function initializePage() {
   }
 }
 
-const uiLayoutMode = {
-  get isNarrowView() {
-    return window.innerWidth < 640;
-  },
-  get isWideView() {
-    return !uiLayoutMode.isNarrowView;
-  },
-};
-
 namespace nsView {
+  const mqUnderMedium = `@media screen and (max-width: 640px)`;
+  const mqOverMedium = `@media screen and (min-width: 640px)`;
+
+  const colors = {
+    white: '#fff',
+    mainText: '#444',
+    topBarBg: '#6cf',
+    bottomBarBg: '#777',
+    navigationFg: '#369',
+    navigationHover: '#2221',
+    sideBarSplitterEdge: '#8888',
+    spNavigationPanelBg: '#cef',
+    chapterHeader: '#f95',
+    sectionHeader: '#46a',
+    head2Caption: '#359',
+    tableBorder: '#aaa8',
+    tableZebra: '#aaa2',
+  };
+
+  const cssDisplayPcOnly = css`
+    ${mqUnderMedium} {
+      display: none;
+    }
+  `;
+
+  const cssDisplaySpOnly = css`
+    ${mqOverMedium} {
+      display: none;
+    }
+  `;
+
   const NodeView_Chapter: FC<{ node: IDocNode_Chapter }> = ({
     node: { title, anchorId },
   }) => {
@@ -604,14 +626,14 @@ namespace nsView {
         </ul>
       </div>,
       css`
-        color: #369;
+        color: ${colors.navigationFg};
 
         > .chapter-bar {
           display: flex;
           align-items: center;
           cursor: pointer;
           &:hover {
-            background: #2221;
+            background: ${colors.navigationHover};
           }
           transition: all 0.3s;
 
@@ -632,7 +654,7 @@ namespace nsView {
             cursor: pointer;
             margin-left: 20px;
             &:hover {
-              background: #2221;
+              background: ${colors.navigationHover};
             }
             transition: all 0.3s;
           }
@@ -662,8 +684,8 @@ namespace nsView {
       <div class="bottom-bar">copyright©2022 yahiro, all rights reserved.</div>,
       css`
         height: 26px;
-        background: #777;
-        color: #fff;
+        background: ${colors.bottomBarBg};
+        color: ${colors.white};
         font-size: 12px;
         display: flex;
         justify-content: center;
@@ -671,21 +693,6 @@ namespace nsView {
       `
     );
   };
-
-  const mqUnderMedium = `@media screen and (max-width: 640px)`;
-  const mqOverMedium = `@media screen and (min-width: 640px)`;
-
-  const cssDisplayPcOnly = css`
-    ${mqUnderMedium} {
-      display: none;
-    }
-  `;
-
-  const cssDisplaySpOnly = css`
-    ${mqOverMedium} {
-      display: none;
-    }
-  `;
 
   const MainColumnContent: FC = () => {
     const { docNodes } = store;
@@ -705,17 +712,17 @@ namespace nsView {
         }
 
         > .chapter-header {
-          background: #f95;
-          color: #fff;
+          background: ${colors.chapterHeader};
+          color: ${colors.white};
           font-size: 1.7rem;
           cursor: pointer;
           padding: 4px 10px;
         }
 
         > .section-header {
-          background: #46a;
+          background: ${colors.sectionHeader};
           font-size: 1.3rem;
-          color: #fff;
+          color: ${colors.white};
           margin-top: 30px;
           margin-bottom: 4px;
           cursor: pointer;
@@ -723,7 +730,7 @@ namespace nsView {
         }
 
         > .head2 {
-          color: #359;
+          color: ${colors.head2Caption};
           font-size: 1.1rem;
           font-weight: bold;
           cursor: pointer;
@@ -767,11 +774,11 @@ namespace nsView {
           border-collapse: collapse;
 
           tr:nth-child(even) {
-            background: #aaa2;
+            background: ${colors.tableZebra};
           }
 
           td {
-            border: solid 1px #aaa8;
+            border: solid 1px ${colors.tableBorder};
             padding: 8px;
           }
           td:first-child {
@@ -822,7 +829,7 @@ namespace nsView {
       setIsOpen(false);
     };
 
-    const fgColor = '#47d';
+    const fgColor = colors.navigationFg;
     return domStyled(
       <div>
         <div class="menu-button" onClick={toggleOpen}>
@@ -842,8 +849,8 @@ namespace nsView {
       css`
         position: relative;
         > .menu-button {
-          color: #fff;
-          border: solid 1px #fff;
+          color: ${colors.white};
+          border: solid 1px ${colors.white};
           width: 32px;
           height: 32px;
           display: flex;
@@ -866,17 +873,17 @@ namespace nsView {
           left: 0;
           border: solid 1px ${fgColor};
           border-radius: 2px;
-          background: #fff;
+          background: ${colors.white};
           width: 240px;
           max-height: 70vh;
           overflow: auto;
-          background: #cef;
-          padding: 6px;
+          background: ${colors.spNavigationPanelBg};
+          padding: 8px;
 
           > ul {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
 
             > li {
               display: flex;
@@ -887,11 +894,11 @@ namespace nsView {
               border-radius: 2px;
               padding: 10px;
               cursor: pointer;
-              background: #fff;
+              background: ${colors.white};
               &:hover {
-                opacity: 0.7;
+                background: ${colors.navigationHover};
               }
-              transition: all 0.5s;
+              transition: all 0.3s;
               &:after {
                 font-family: 'Material Icons';
                 content: 'keyboard_arrow_right';
@@ -927,13 +934,13 @@ namespace nsView {
         height: 100%;
         overflow-y: hidden;
 
-        color: #444;
+        color: ${colors.mainText};
 
         > .top-bar {
           height: 55px;
-          background: #6cf;
+          background: ${colors.topBarBg};
           > h1 {
-            color: #fff;
+            color: ${colors.white};
             font-size: 1.7rem;
             white-space: nowrap;
           }
@@ -953,7 +960,7 @@ namespace nsView {
 
           > .side-column {
             width: 280px;
-            border-right: solid 1px #8888;
+            border-right: solid 1px ${colors.sideBarSplitterEdge};
             flex-shrink: 0;
             overflow-y: scroll;
             ${cssDisplayPcOnly};
