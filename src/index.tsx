@@ -982,7 +982,7 @@ namespace nsView {
 }
 
 window.onload = async () => {
-  console.log('kermite-user-guide 220729');
+  console.log('kermite-user-guide 220730a');
   initializePage();
   render(() => <nsView.SiteRoot />, document.getElementById('app'));
   window.addEventListener('resize', debounce(asyncRerender, 200));
