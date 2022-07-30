@@ -368,8 +368,11 @@ function createStore() {
   const pageSources = nsDocLoader.readManuscriptDocuments(documentSources);
   let pageIndex = -1;
 
+  const tocExpandFlags: Record<string, boolean> = {};
+
   return {
     pageSources,
+    tocExpandFlags,
     get docNodes() {
       return pageSources[pageIndex]?.docNodes || [];
     },
@@ -379,7 +382,15 @@ function createStore() {
     selectPageById(pageId: string) {
       const index = pageSources.findIndex((it) => it.pageId === pageId);
       if (index >= 0) {
+        if (pageIndex >= 0) {
+          tocExpandFlags[pageSources[pageIndex].pageId] = false;
+        }
         pageIndex = index;
+        const page = pageSources[index];
+        for (const key in tocExpandFlags) {
+          tocExpandFlags[key] = false;
+        }
+        tocExpandFlags[page.pageId] = true;
       } else {
         console.error(`cannot find page for ${pageId}`);
         if (pageIndex === -1) {
@@ -561,35 +572,70 @@ namespace nsView {
     return <Component node={node} />;
   }
 
-  const ChapterToc: FC<{ docNodes: IDocNode[] }> = ({ docNodes }) => {
-    const listedNodes = docNodes.filter(
-      (it) => it.nodeType === 'chapter' || it.nodeType === 'section'
-    ) as (IDocNode_Chapter | IDocNode_Section)[];
+  const ChapterToc: FC<{ pageSource: IPageSource }> = ({ pageSource }) => {
+    const { pageId } = pageSource;
+    const isOpen = store.tocExpandFlags[pageId];
+    const toggleOpen = (e: MouseEvent) => {
+      store.tocExpandFlags[pageId] = !store.tocExpandFlags[pageId];
+      e.stopPropagation();
+    };
+
+    const sectionNodes = pageSource.docNodes.filter(
+      (it) => it.nodeType === 'section'
+    ) as IDocNode_Section[];
     return domStyled(
       <div>
-        <ul>
-          {listedNodes.map((node) => (
-            <li
-              class={node.nodeType === 'section' && '--with-indent'}
-              onClick={() => navigateToAnchor(node.anchorId)}
-            >
+        <div
+          class="chapter-bar"
+          onClick={() => navigateToAnchor(pageSource.pageId)}
+        >
+          <i class="material-icons">article</i>
+          {pageSource.chapterTitle}
+          <i class="material-icons arrow" onClick={toggleOpen}>
+            {isOpen ? 'expand_less' : 'chevron_right'}
+          </i>
+        </div>
+        <ul if={isOpen}>
+          {sectionNodes.map((node) => (
+            <li onClick={() => navigateToAnchor(node.anchorId)}>
               {node.title}
             </li>
           ))}
         </ul>
       </div>,
       css`
-        > ul > li {
-          cursor: pointer;
+        color: #369;
 
+        > .chapter-bar {
+          display: flex;
+          align-items: center;
+          cursor: pointer;
           &:hover {
             background: #2221;
           }
-          &.--with-indent {
-            margin-left: 10px;
-          }
-
           transition: all 0.3s;
+
+          i.arrow {
+            font-size: 18px;
+            margin-left: auto;
+            user-select: none;
+          }
+          padding: 4px 0;
+        }
+
+        > ul {
+          display: flex;
+          flex-direction: column;
+          > li {
+            font-size: 15px;
+            padding: 2px 0;
+            cursor: pointer;
+            margin-left: 20px;
+            &:hover {
+              background: #2221;
+            }
+            transition: all 0.3s;
+          }
         }
       `
     );
@@ -599,14 +645,14 @@ namespace nsView {
     return domStyled(
       <div>
         {store.pageSources.map((pageSource) => (
-          <ChapterToc docNodes={pageSource.docNodes} />
+          <ChapterToc pageSource={pageSource} />
         ))}
       </div>,
       css`
         padding: 20px;
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: 10px;
       `
     );
   };
@@ -677,7 +723,7 @@ namespace nsView {
         }
 
         > .head2 {
-          color: #00a;
+          color: #359;
           font-size: 1.1rem;
           font-weight: bold;
           cursor: pointer;
@@ -881,7 +927,7 @@ namespace nsView {
         height: 100%;
         overflow-y: hidden;
 
-        color: #333;
+        color: #444;
 
         > .top-bar {
           height: 55px;
