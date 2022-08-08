@@ -407,7 +407,7 @@ const initialPageScrollDriver = new (class {
   private numImagesToLoad = 0;
   private scrollFn: (() => void) | undefined;
   setNumInitialImagesToLoad(n: number) {
-    console.log('num', n);
+    // console.log('num', n);
     this.numImagesToLoad = n;
   }
 
@@ -418,7 +418,7 @@ const initialPageScrollDriver = new (class {
   onImageLoaded = () => {
     this.loadedImageCount++;
     if (this.loadedImageCount <= this.numImagesToLoad) {
-      console.log(`scroll ${this.loadedImageCount}`);
+      // console.log(`scroll ${this.loadedImageCount}`);
       this.scrollFn?.();
     }
   };
@@ -1028,7 +1028,7 @@ namespace nsView {
 }
 
 window.onload = async () => {
-  console.log('kermite-user-guide 220808a');
+  console.log('kermite-user-guide 220808b');
   initializePage();
   render(() => <nsView.SiteRoot />, document.getElementById('app'));
   window.addEventListener('resize', debounce(asyncRerender, 200));
