@@ -402,6 +402,28 @@ function createStore() {
 }
 const store = createStore();
 
+const initialPageScrollDriver = new (class {
+  private loadedImageCount = 0;
+  private numImagesToLoad = 0;
+  private scrollFn: (() => void) | undefined;
+  setNumInitialImagesToLoad(n: number) {
+    console.log('num', n);
+    this.numImagesToLoad = n;
+  }
+
+  setScrollFn(fn: () => void) {
+    this.scrollFn = fn;
+  }
+
+  onImageLoaded = () => {
+    this.loadedImageCount++;
+    if (this.loadedImageCount <= this.numImagesToLoad) {
+      console.log(`scroll ${this.loadedImageCount}`);
+      this.scrollFn?.();
+    }
+  };
+})();
+
 async function scrollPageToAnchor(anchorId: string, smooth: boolean) {
   if (smooth) {
     const domMainColumnContent = document.getElementById(
@@ -429,11 +451,31 @@ async function navigateToAnchor(anchorId: string) {
   }
 }
 
+async function navigateToAnchorForInitialPageLoad(anchorId: string) {
+  const doScrollToAnchor = () => {
+    location.hash = '';
+    scrollPageToAnchor(anchorId, true);
+  };
+
+  const [newPageId] = anchorId.split('/');
+  if (newPageId !== store.currentPageId) {
+    store.selectPageById(newPageId);
+  }
+  const { docNodes } = store;
+  const numImages = docNodes.filter((it) => it.nodeType === 'image').length;
+  if (numImages > 0) {
+    initialPageScrollDriver.setNumInitialImagesToLoad(numImages);
+    initialPageScrollDriver.setScrollFn(doScrollToAnchor);
+  } else {
+    doScrollToAnchor();
+  }
+}
+
 function initializePage() {
   const { hash } = location;
   if (hash) {
     const anchorId = decodeURI(hash.slice(1));
-    navigateToAnchor(anchorId);
+    navigateToAnchorForInitialPageLoad(anchorId);
   } else {
     store.selectPageById(store.pageSources[0].pageId);
   }
@@ -514,7 +556,11 @@ namespace nsView {
   }) => {
     return (
       <div class="image-block">
-        <img class={['image', sizeSpec === 'half' && '--half']} src={url} />
+        <img
+          class={['image', sizeSpec === 'half' && '--half']}
+          src={url}
+          onLoad={initialPageScrollDriver.onImageLoaded}
+        />
         <div class="image-remark" if={remark}>
           {remark}
         </div>
