@@ -29,8 +29,10 @@ RpOddSplit|分割型で左右のキーボードが非対称なキーボード用
 マイコンボードの種類を選びます。Kermiteが対応しているボードでは、ボード上のLEDをインジケータとして利用できます。また、ボードを選択すると画面にボードのピンアサインのプレビューが表示されます。
 
 #table
-ProMicroRP2040|Sparkfun ProMicro RP2040
 RpiPico|Raspberry Pi Pico
+ProMicroRP2040|Sparkfun ProMicro RP2040
+KB2040|Adafruit KB2040
+XiaoRP2040|Seeed Xiao RP2040
 ChipRP2040|チップ単体で使用する場合や、ボードがKermiteで対応していない場合
 
 #head2 use board LEDs
