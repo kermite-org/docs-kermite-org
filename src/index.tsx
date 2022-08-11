@@ -17,6 +17,7 @@ import docC1bMainViewDetail from './c1b-main-view-detail.fdoc';
 import docC2LayoutEditor from './c2-layout-editor.fdoc';
 import docC3FirmwareConfiguration from './c3-firmware-configuration.fdoc';
 import docC4UsageByPurpose from './c4-usage-by-purpose.fdoc';
+import { extraStylesDefinition } from './extraStyles';
 
 type IDocNodeType =
   | 'chapter'
@@ -265,7 +266,7 @@ namespace nsDocLoader {
     } else if (source.nodeType === 'rawHtml') {
       return {
         nodeType: 'rawHtml',
-        content: source.contentLines!.join(''),
+        content: source.contentLines!.join('\n'),
       };
     }
     throw new Error(`invalid nodeType ${source.nodeType}`);
@@ -743,8 +744,11 @@ namespace nsView {
   const MainColumnContent: FC = () => {
     const { docNodes } = store;
     return domStyled(
-      <div id="dom-main-column-content">{docNodes.map(renderNode)}</div>,
+      <div id="dom-main-column-content" class={extraStylesDefinition}>
+        {docNodes.map(renderNode)}
+      </div>,
       css`
+        width: 100%;
         height: 100%;
         overflow-y: auto;
         scroll-padding-top: 20px;
@@ -1013,7 +1017,8 @@ namespace nsView {
           }
 
           > .main-column {
-            flex-grow: 1;
+            width: calc(100%-280px);
+            overflow-x: hidden;
           }
         }
 
@@ -1028,7 +1033,7 @@ namespace nsView {
 }
 
 window.onload = async () => {
-  console.log('kermite-user-guide 220808b');
+  console.log('kermite-user-guide 2208011a');
   initializePage();
   render(() => <nsView.SiteRoot />, document.getElementById('app'));
   window.addEventListener('resize', debounce(asyncRerender, 200));

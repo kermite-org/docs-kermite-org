@@ -79,6 +79,7 @@ move|ドラッグでキーや点を移動します。
 key|クリックすることでキーを新たに配置していきます。
 shape|クリックで外形の点を追加していきます。 外形を正しく入力するには、開始点をクリックしてポリゴンを閉じる必要があります。
 delete|クリックしたキーや点を削除します。
+shape_ex|パスによる追加の外形を編集します。
 
 
 #-------
@@ -144,3 +145,198 @@ delete|クリックしたキーや点を削除します。
 #text
 プロジェクトに含まれるレイアウトを選択するダイアログが表示されます。取り込みたいレイアウトを選んで'Apply'ボタンを押します。
 編集中のレイアウトが選択したプロジェクトレイアウトで置き換えられます。
+
+
+#--------
+#section パスによる外形の設定
+
+#rawHtml
+<p style="color:#F60">この機能は現在開発中のもので、まだリリースされていません。</p>
+
+#text
+ポリゴンによる形状では丸みのついたコーナーなど曲線を含む外形を表現できないため、任意のパスを指定して外形を定義する機能が追加されました。
+
+#image url=https://i.gyazo.com/9ef29d65343e286dff6d79c714c3abfc.png
+
+#text
+編集モードで、'shape_ex'を選択すると、右の列に追加の外形を設定するUIが表示されます。
+パスコマンド入力欄と座標変換の設定UIがあります。
+
+#rawHtml
+<div>
+パスコマンド入力欄には、SVGのパスコマンド構文に従ってパスを書き込みます。<br/>
+パスコマンドの詳細は、<a href=https://developer.mozilla.org/ja/docs/Web/SVG/Attribute/d target="_blank">MDNのドキュメント</a>を参照してください。
+</div>
+
+#text
+以下では簡単なパスの書き方の例をいくつか示します。また、グラフィックソフトで作成したSVGファイルからパスコマンドの定義を取り込む方法も併せて紹介します。
+
+#head2 矩形
+
+#rawHtml
+<div class="extraStyle__pathExampleBox">
+  <img src="https://i.gyazo.com/b85e5213c09f3cead4883d0c0a60a7b2.png" />
+  <pre>
+M 0,0
+L 60,0
+L 60,40
+L 0,40
+Z
+  </pre>
+</div>
+
+
+#text
+Mコマンド, Lコマンド, Zコマンドを使用します。
+M <X>,<Y> パスの開始点を指定
+L <X>,<Y> 線をひく
+Z  パスを閉じる
+
+
+#head2 角を丸めた矩形(2次ベジエ曲線を使用)
+
+#rawHtml
+<div class="extraStyle__pathExampleBox">
+  <img src="https://i.gyazo.com/017ce958ed9f7939b4bfbdbbf621b562.png" />
+  <pre>
+M 10,0
+L 50,0
+Q 60,0 60,10
+L 60,30
+Q 60,40 50,40
+L 10,40
+Q 0,40 0,30
+L 0,10
+Q 0,0 10,0
+Z
+  </pre>
+</div>
+
+#text
+Qコマンドを使用して、2次ベジエ曲線による角の丸めを表現できます。
+Q <制御点X>, <制御点Y>  <到達点X>,<到達点Y>
+
+
+#head2 角を丸めた矩形(円弧を使用)
+
+#rawHtml
+<div class="extraStyle__pathExampleBox">
+  <img src="https://i.gyazo.com/3a7beb4fd9be81a02e5679aa68fb613e.png" />
+  <pre>
+M 10,0
+L 50,0
+A 10,10 0,0,1 60,10
+L 60,30
+A 10,10 0,0,1 50,40
+L 10,40
+A 10,10 0,0,1 0,30
+L 0,10
+A 10,10 0,0,1 10,0
+Z
+  </pre>
+</div>
+
+#text
+Aコマンドを使用して、円弧による角の丸めを表現できます。
+A <半径X>,<半径Y> <x-axis-rotation>,<large-arc-flag>,<sweep-flag> <到達点X>,<到達点Y>
+x-axis-rotationは楕円の傾き,large-arc-flagは大きい方の円弧かどうかのフラグ、sweep-flagは時計回りかどうかのフラグです。
+
+#head2 複数の形状
+
+#rawHtml
+<div class="extraStyle__pathExampleBox">
+  <img src="https://i.gyazo.com/9f7909d653b75ae3f2ef56f953022006.png" />
+  <pre>
+M 0,0
+L 60, 0
+L 60, 40
+L 0, 40
+Z
+M 0,50
+L 60, 50
+L 60, 90
+L 0, 90
+Z
+  </pre>
+</div>
+
+#text
+Zコマンドでパスを閉じたあと、さらに他のパスを記述すると複数の形状を定義できます。
+
+#head2 くり抜き
+
+#rawHtml
+<div class="extraStyle__pathExampleBox">
+  <img src="https://i.gyazo.com/7123c391f6894163aa9b4406a71e8c14.png" />
+  <pre>
+M 0,0
+L 60, 0
+L 60, 70
+L 0, 70
+Z
+M 10, 40
+L 10, 60
+L 50, 60
+L 50, 40
+Z
+  </pre>
+</div>
+
+#text
+外側のパスを反時計回り、内側のパスを時計回りで定義すると、外側のパスを内側のパスでくり抜くことができます。
+
+
+#head2 グラフィックソフトで作成した外形の取り込み
+
+
+#image url=https://i.gyazo.com/b6e27eaf36b77d3badcde4042b486fe9.png
+
+#text
+ベクターグラフィックスソフトで外形を書きます。円や矩形などの形状はパスに変換しておきます。また、複数のパスは結合して単一化しておきます。
+SVGファイルを書き出します。
+
+#image url=https://i.gyazo.com/3167287cfbd121e69550724642440e51.png
+
+#text
+SVGファイルをテキストエディタで開き、<path d="..." のdの値にパスコマンドが書かれているので、この部分のテキストをコピーします。
+
+#image url=https://i.gyazo.com/a6ecea9afed0bdf89cc8931fc45d387b.png
+
+#text
+パスコマンド入力欄にテキストを貼り付けて、座標変換のオプションを適宜設定します。
+
+
+#head2  グラフィックソフトで作成した外形の取り込み(座標調整の例)
+
+#image url=https://i.gyazo.com/28432e1bcfd41d0b40921e41938c359c.png
+
+#text
+外形の座標を元の設計に合わせるコツを紹介します。
+
+#text
+SVGにはmmなどの座標単位がありません。グラフィックスソフトでSVGを書き出す際には設定の調整を行ってmm単位で座標を吐かせる工夫が必要です。
+
+#text
+ここではAffinity DesignerでSVGを書き出す際の調整の例を示します。
+・ページの左上を原点とみなして、Kermiteのレイアウト座標系に合わせてオブジェクトを配置します。
+・SVG書き出し時のオプションで、「変形をフラット化」のオプションを有効にします。
+・SVG書き出し時のオプションで、DPIを25.4に設定します。
+
+#text
+フラット化のオプションは、trasform属性を使わずに座標値をそのまま書き出させるために付与します。
+
+#text
+SVGの座標はmmではなくピクセル単位で吐き出されるようです。そこでDPIの設定によってmmベースの座標単位になるようにします。DPIの設定値を25.4にします。1インチ(=25.4mm)あたりのピクセル数が25.4になるため、1座標単位が1mmに相当する座標値が吐き出されます。
+
+#image url=https://i.gyazo.com/a44043827c177936d2b50234adc16ccc.png
+
+#text
+これで元の設計と同じ配置の外形を再現できました。
+
+#head2 Adobe Illustratorの場合
+
+#text
+座標系の原点の合わせ方は上記の解説と同様の方法でできそうです。
+IllustratorでのSVG出力は任意のDPIの指定ができず、常に72DPIでの出力になるようです。スケーリングを合わせるためには、scaleの値に25.4/72の0.35277を設定してください。
+
+#image url=https://i.gyazo.com/8ef0c7b7aefd456daf6a56d42368ab87.png
