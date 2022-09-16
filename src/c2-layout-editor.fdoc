@@ -337,3 +337,70 @@ SVGの座標はmmではなくピクセル単位で吐き出されるようです
 IllustratorでのSVG出力は任意のDPIの指定ができず、常に72DPIでの出力になるようです。スケーリングを合わせるためには、scaleの値に25.4/72の0.35277を設定してください。
 
 #image url=https://i.gyazo.com/8ef0c7b7aefd456daf6a56d42368ab87.png
+
+
+#--------
+#section 基板設計ファイルのインポート
+
+#text
+KiCadの基板設計ファイルからキースイッチの座標と外形のパスを抽出して、キーレイアウトを構築する機能を追加しました。
+
+#text
+ここでは、ウィザードで作成したレイアウトを、KiCadのデータを元に生成したレイアウトに置き換える想定で解説を行います。
+
+#image url=https://i.gyazo.com/ee43bf6c7a8990f03fe8f7ca06f02a41.png
+
+#text
+ウィザードでキーボードをセットアップして、レイアウト画面を開きました。
+
+#image url=https://i.gyazo.com/9d6a92d7859dbedf072962ce6c9c4ba2.png
+
+#text
+メニューから、'kicad pcb file loader'を選択します。
+
+#image url=https://i.gyazo.com/971f930c5dd89e326cc0cabbd5dfad61.png
+
+#text
+'load file'ボタンを押すと、ファイル選択ダイアログが表示されます。
+KiCadの基板設計ファイルを選んで読み込みます。
+
+#text
+'footprint search word'はフットプリント名のフィルタです。この文字列を含むフットプリントが抽出されます。基板ファイルを読み込んだときに、フットプリントにキースイッチらしき単語が含まれているときには、それが初期値としてセットされます。必要に応じて変更してください。
+
+#text
+'invert facing'のオプションは、フットプリントの角度を180度回転させます。
+
+#text
+'apply layout'ボタンを押すと、現在編集しているレイアウトを置き換えて、基板データを元に構築したレイアウトが反映されます。
+
+#image url=https://i.gyazo.com/34cf9d61b6b937b1ce5667be4425245e.png
+
+#text
+基板を元に生成されたレイアウトが適用されました。
+必要に応じて、キーの大きさなどの設定を調整します。この例ではkey size unitを変更しています。
+
+#image url=https://i.gyazo.com/3689a5b0d8c07abf0bf330150cb30d85.png
+
+#text
+基板データからキーレイアウトが生成された段階では、各キーにはキーインデクスが設定されておらず、物理キーとの対応づけができていません。それぞれのキーに対して、キーインデクスを割り当ててください。
+
+#image url=https://i.gyazo.com/6208a4e2f1e7f91b26ae0116fcec934d.png
+
+#text
+物理キーのキーインデクスを反映する機能があり、これを使うとキーインデクスを手打ちで入力する手間が省けます。
+
+#text
+画面右上にあるキーインデクス反映ボタンを押して機能を有効化します。
+この機能が有効になっているときに、画面上で対象のキーを選択してデバイスの物理キーを押すと、選択されているキーに物理キーのインデクスが割り当てられます。
+
+#image url=https://i.gyazo.com/cfd806ea0aaeca8bc1227510cd627c9c.png
+
+#text
+すべてのキーに対して、キーインデクスを設定しました。
+
+#image url=https://i.gyazo.com/56d2a03bcbe80b1a53ad931efae5ae4a.png
+
+#text
+メイン画面でプロファイルを保存します。
+
+
